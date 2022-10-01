@@ -57,6 +57,7 @@ module.exports = {
     },
   },
   plugins: [
+    require('kutty'),
     require('@tailwindcss/forms'),
     require('@tailwindcss/aspect-ratio'),
   ],

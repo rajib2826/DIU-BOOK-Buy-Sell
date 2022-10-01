@@ -11,7 +11,7 @@ const Delivery = () => {
         Our perks
       </h2>
 
-      <div className='mx-auto max-w-7xl py-24 px-4 sm:px-6 sm:py-32 lg:px-8'>
+      <div className='mx-auto max-w-7xl py-20 px-4 sm:px-6 sm:py-24 lg:px-8'>
         <div className='grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-0'>
           {perks.map((perk) => (
             <div
