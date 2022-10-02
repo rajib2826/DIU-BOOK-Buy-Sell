@@ -58,7 +58,9 @@ const Registration = () => {
                 className='mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm'
                 defaultValue=''
               >
-                <option disabled>Select</option>
+                <option selected disabled>
+                  Select
+                </option>
                 <option>CSE</option>
                 <option>EEE</option>
                 <option>CE</option>
@@ -101,7 +103,7 @@ const Registration = () => {
                 <input
                   type='checkbox'
                   aria-label='checkbox'
-                  className='form-checkbox rounded-md border border-gray-400'
+                  className='form-checkbox rounded-sm border border-gray-400'
                 />
                 <span className='block ml-2 text-sm font-medium text-gray-700 cursor-pointer'>
                   Agree to Privacy Policy

@@ -111,7 +111,7 @@ const Navbar = () => {
 
               {/* Logo */}
               <div className='ml-4 flex lg:ml-0'>
-                <Link to='/signup'>
+                <Link to='/'>
                   <span className='sr-only'>Your Company</span>
                   <img
                     className='h-8 w-auto'
