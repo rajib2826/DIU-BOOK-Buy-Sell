@@ -3,6 +3,7 @@ const products = [
     id: 1,
     name: 'Zip Tote Basket',
     color: 'White and black',
+    status: 'Sold',
     href: '/book-details',
     imageSrc:
       'https://tailwindui.com/img/ecommerce-images/product-page-03-related-product-01.jpg',
@@ -14,6 +15,7 @@ const products = [
     id: 2,
     name: 'Zip Tote Basket',
     color: 'White and black',
+    status: 'Unsold',
     href: '/book-details',
     imageSrc:
       'https://tailwindui.com/img/ecommerce-images/product-page-03-related-product-01.jpg',
@@ -25,6 +27,7 @@ const products = [
     id: 3,
     name: 'Zip Tote Basket',
     color: 'White and black',
+    status: 'Unsold',
     href: '/book-details',
     imageSrc:
       'https://tailwindui.com/img/ecommerce-images/product-page-03-related-product-01.jpg',
@@ -36,6 +39,7 @@ const products = [
     id: 10,
     name: 'Zip Tote Basket',
     color: 'White and black',
+    status: 'Unsold',
     href: '/book-details',
     imageSrc:
       'https://tailwindui.com/img/ecommerce-images/product-page-03-related-product-01.jpg',
@@ -47,6 +51,7 @@ const products = [
     id: 11,
     name: 'Zip Tote Basket',
     color: 'White and black',
+    status: 'Sold',
     href: '/book-details',
     imageSrc:
       'https://tailwindui.com/img/ecommerce-images/product-page-03-related-product-01.jpg',
@@ -58,6 +63,7 @@ const products = [
     id: 12,
     name: 'Zip Tote Basket',
     color: 'White and black',
+    status: 'Sold',
     href: '/book-details',
     imageSrc:
       'https://tailwindui.com/img/ecommerce-images/product-page-03-related-product-01.jpg',
@@ -69,6 +75,7 @@ const products = [
     id: 13,
     name: 'Zip Tote Basket',
     color: 'White and black',
+    status: 'Sold',
     href: '/book-details',
     imageSrc:
       'https://tailwindui.com/img/ecommerce-images/product-page-03-related-product-01.jpg',
@@ -80,6 +87,7 @@ const products = [
     id: 14,
     name: 'Zip Tote Basket',
     color: 'White and black',
+    status: 'Sold',
     href: '/book-details',
     imageSrc:
       'https://tailwindui.com/img/ecommerce-images/product-page-03-related-product-01.jpg',
@@ -91,6 +99,7 @@ const products = [
     id: 15,
     name: 'Zip Tote Basket',
     color: 'White and black',
+    status: 'Unsold',
     href: '/book-details',
     imageSrc:
       'https://tailwindui.com/img/ecommerce-images/product-page-03-related-product-01.jpg',
@@ -102,6 +111,7 @@ const products = [
     id: 16,
     name: 'Zip Tote Basket',
     color: 'White and black',
+    status: 'Unsold',
     href: '/book-details',
     imageSrc:
       'https://tailwindui.com/img/ecommerce-images/product-page-03-related-product-01.jpg',
