@@ -1,33 +1,29 @@
 const categories = [
   {
-    name: 'New Arrivals',
-    href: '#',
-    imageSrc:
-      'https://tailwindui.com/img/ecommerce-images/home-page-01-category-01.jpg',
+    name: "CSE",
+    href: "#",
+    imageSrc: "https://i.ibb.co/82rMGcG/download-1.jpg",
   },
   {
-    name: 'Productivity',
-    href: '#',
-    imageSrc:
-      'https://tailwindui.com/img/ecommerce-images/home-page-01-category-02.jpg',
+    name: "TEXTILE",
+    href: "#",
+    imageSrc: "https://i.ibb.co/80zpd6t/61x-Ip-TM0-r-L.jpg",
   },
   {
-    name: 'Workspace',
-    href: '#',
-    imageSrc:
-      'https://tailwindui.com/img/ecommerce-images/home-page-01-category-04.jpg',
+    name: "EEE",
+    href: "#",
+    imageSrc: "https://i.ibb.co/cvZVpWx/41-Aql-YKPfp-L-SL500.jpg",
   },
   {
-    name: 'Accessories',
-    href: '#',
-    imageSrc:
-      'https://tailwindui.com/img/ecommerce-images/home-page-01-category-05.jpg',
+    name: "PHARMACY",
+    href: "#",
+    imageSrc: "https://i.ibb.co/VJdWp1B/9789354663444.jpg",
   },
   {
-    name: 'Sale',
-    href: '#',
+    name: "BBA",
+    href: "#",
     imageSrc:
-      'https://tailwindui.com/img/ecommerce-images/home-page-01-category-03.jpg',
+      "https://i.ibb.co/1G3qHqs/strategy-to-crack-bba-entrance-book-cover.png",
   },
 ];
 

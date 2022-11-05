@@ -26,37 +26,14 @@ const Hero = () => {
                     <div className='grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8'>
                       <div className='h-64 w-44 overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100'>
                         <img
-                          src='https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-01.jpg'
+                          src='https://i.ibb.co/LNzjLqP/41-SNoh5-Zh-OL-SX440-BO1-204-203-200.jpg'
                           alt=''
                           className='h-full w-full object-cover object-center'
                         />
                       </div>
                       <div className='h-64 w-44 overflow-hidden rounded-lg'>
                         <img
-                          src='https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-02.jpg'
-                          alt=''
-                          className='h-full w-full object-cover object-center'
-                        />
-                      </div>
-                    </div>
-                    <div className='grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8'>
-                      <div className='h-64 w-44 overflow-hidden rounded-lg'>
-                        <img
-                          src='https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-03.jpg'
-                          alt=''
-                          className='h-full w-full object-cover object-center'
-                        />
-                      </div>
-                      <div className='h-64 w-44 overflow-hidden rounded-lg'>
-                        <img
-                          src='https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-04.jpg'
-                          alt=''
-                          className='h-full w-full object-cover object-center'
-                        />
-                      </div>
-                      <div className='h-64 w-44 overflow-hidden rounded-lg'>
-                        <img
-                          src='https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-05.jpg'
+                          src='https://i.ibb.co/r5cNmLf/61x-Ip-TM0-r-L.jpg'
                           alt=''
                           className='h-full w-full object-cover object-center'
                         />
@@ -65,14 +42,37 @@ const Hero = () => {
                     <div className='grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8'>
                       <div className='h-64 w-44 overflow-hidden rounded-lg'>
                         <img
-                          src='https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-06.jpg'
+                          src='https://i.ibb.co/GxnwdpM/41-Aql-YKPfp-L-SL500.jpg'
                           alt=''
                           className='h-full w-full object-cover object-center'
                         />
                       </div>
                       <div className='h-64 w-44 overflow-hidden rounded-lg'>
                         <img
-                          src='https://tailwindui.com/img/ecommerce-images/home-page-03-hero-image-tile-07.jpg'
+                          src='https://i.ibb.co/HtZmmpR/images.jpg'
+                          alt=''
+                          className='h-full w-full object-cover object-center'
+                        />
+                      </div>
+                      <div className='h-64 w-44 overflow-hidden rounded-lg'>
+                        <img
+                          src='https://i.ibb.co/4W6SKmb/download.jpg'
+                          alt=''
+                          className='h-full w-full object-cover object-center'
+                        />
+                      </div>
+                    </div>
+                    <div className='grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8'>
+                      <div className='h-64 w-44 overflow-hidden rounded-lg'>
+                        <img
+                          src='https://i.ibb.co/YNXc6Jt/EE6604-Design-of-Electrical-Machines.webp'
+                          alt=''
+                          className='h-full w-full object-cover object-center'
+                        />
+                      </div>
+                      <div className='h-64 w-44 overflow-hidden rounded-lg'>
+                        <img
+                          src='https://i.ibb.co/3YtDsdY/download-1.jpg'
                           alt=''
                           className='h-full w-full object-cover object-center'
                         />
@@ -86,7 +86,7 @@ const Hero = () => {
                 href='#'
                 className='inline-block rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-center font-medium text-white hover:bg-indigo-700'
               >
-                Shop Collection
+                View Books
               </a>
             </div>
           </div>

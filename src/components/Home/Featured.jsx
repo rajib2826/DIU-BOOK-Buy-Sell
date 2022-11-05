@@ -11,7 +11,7 @@ const Featured = () => {
           id='sale-heading'
           className='text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl'
         >
-          Get 25% off during our one-time sale
+          Largest book buy-sell platform in DIU
         </h2>
         <p className='mx-auto mt-4 max-w-xl text-xl text-gray-600'>
           Most of our products are limited releases that won't come back. Get
@@ -21,7 +21,7 @@ const Featured = () => {
           href='#'
           className='mt-6 inline-block w-full rounded-md border border-transparent bg-gray-900 py-3 px-8 font-medium text-white hover:bg-gray-800 sm:w-auto'
         >
-          Get access to our one-time sale
+          View offers
         </a>
       </div>
     </section>

@@ -8,7 +8,7 @@ const Login = () => {
         <Link to='/'>
           <img
             className='mx-auto h-12 w-auto'
-            src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600'
+            src="https://i.ibb.co/YytpcVr/logo-image-removebg-preview.png"
             alt='Your Company'
           />
         </Link>

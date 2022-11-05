@@ -60,7 +60,7 @@ const Books = () => {
                       className='absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black opacity-50'
                     />
                     <p className='relative text-lg font-semibold text-white'>
-                      {product.price}
+                      <span className='text-2xl font-bold'>৳</span> {product.price}
                     </p>
                   </div>
                 </div>
@@ -76,7 +76,7 @@ const Books = () => {
             ))}
           </div>
         </div>
-      </div>
+      </div >
       <Footer />
     </>
   );

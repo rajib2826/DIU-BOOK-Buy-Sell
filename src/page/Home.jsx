@@ -21,7 +21,7 @@ const Home = () => {
           <div aria-hidden='true' className='absolute inset-0'>
             <div className='absolute inset-0 mx-auto max-w-7xl overflow-hidden xl:px-8'>
               <img
-                src='https://tailwindui.com/img/ecommerce-images/home-page-02-sale-full-width.jpg'
+                src='https://i.ibb.co/pv3SbtK/144617968-10158266113482203-6061941687031999879-o.webp'
                 alt=''
                 className='h-full w-full object-cover object-center'
               />

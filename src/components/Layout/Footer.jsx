@@ -7,90 +7,16 @@ const Footer = () => {
       <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
         <div className='border-t border-gray-200'>
           <div className='pt-6 pb-12'>
-            <div className='mx-auto mt-16 max-w-5xl xl:grid xl:grid-cols-2 xl:gap-8'>
-              <div className='grid grid-cols-2 gap-8 xl:col-span-2'>
-                <div className='space-y-12 md:grid md:grid-cols-2 md:gap-8 md:space-y-0'>
-                  <div>
-                    <h3 className='text-sm font-medium text-gray-900'>
-                      Products
-                    </h3>
-                    <ul role='list' className='mt-6 space-y-6'>
-                      {footerNavigation.products.map((item) => (
-                        <li key={item.name} className='text-sm'>
-                          <a
-                            href={item.href}
-                            className='text-gray-500 hover:text-gray-600'
-                          >
-                            {item.name}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className='text-sm font-medium text-gray-900'>
-                      Customer Service
-                    </h3>
-                    <ul role='list' className='mt-6 space-y-6'>
-                      {footerNavigation.customerService.map((item) => (
-                        <li key={item.name} className='text-sm'>
-                          <a
-                            href={item.href}
-                            className='text-gray-500 hover:text-gray-600'
-                          >
-                            {item.name}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-                <div className='space-y-12 md:grid md:grid-cols-2 md:gap-8 md:space-y-0'>
-                  <div>
-                    <h3 className='text-sm font-medium text-gray-900'>
-                      Company
-                    </h3>
-                    <ul role='list' className='mt-6 space-y-6'>
-                      {footerNavigation.company.map((item) => (
-                        <li key={item.name} className='text-sm'>
-                          <a
-                            href={item.href}
-                            className='text-gray-500 hover:text-gray-600'
-                          >
-                            {item.name}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className='text-sm font-medium text-gray-900'>Legal</h3>
-                    <ul role='list' className='mt-6 space-y-6'>
-                      {footerNavigation.legal.map((item) => (
-                        <li key={item.name} className='text-sm'>
-                          <a
-                            href={item.href}
-                            className='text-gray-500 hover:text-gray-600'
-                          >
-                            {item.name}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className='lg:grid lg:grid-cols-2 lg:gap-x-6 xl:gap-x-8'>
             <div className='flex items-center rounded-lg bg-gray-100 p-6 sm:p-10'>
               <div className='mx-auto max-w-sm'>
                 <h3 className='font-semibold text-gray-900'>
-                  Sign up for our newsletter
+                  Sign up for our Book offer
                 </h3>
                 <p className='mt-2 text-sm text-gray-500'>
-                  The latest news, articles, and resources, sent to your inbox
+                  The latest books, articles, and resources, sent to your inbox
                   weekly.
                 </p>
                 <form className='mt-4 sm:mt-6 sm:flex'>
@@ -119,15 +45,15 @@ const Footer = () => {
             <div className='relative mt-6 flex items-center py-12 px-6 sm:py-16 sm:px-10 lg:mt-0'>
               <div className='absolute inset-0 overflow-hidden rounded-lg'>
                 <img
-                  src='https://tailwindui.com/img/ecommerce-images/footer-02-exclusive-sale.jpg'
+                  src='https://www.sslcommerz.com/wp-content/uploads/2021/06/Payment-Brands.jpg'
                   alt=''
-                  className='h-full w-full object-cover object-center saturate-0 filter'
+                  className='h-full w-full object-cover object-center filter'
                 />
-                <div className='absolute inset-0 bg-indigo-600 bg-opacity-90' />
+                <div className='absolute inset-0 bg-gray-600 bg-opacity-90' />
               </div>
               <div className='relative mx-auto max-w-sm text-center'>
                 <h3 className='text-2xl font-bold tracking-tight text-white'>
-                  Get early access
+                  We accept SSL Payment
                 </h3>
                 <p className='mt-2 text-gray-200'>
                   Did you sign up to the newsletter? If so, use the keyword we
