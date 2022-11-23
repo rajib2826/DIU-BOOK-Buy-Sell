@@ -43,7 +43,7 @@ const Post = ({ open, setOpen }) => {
                               careful what you share.
                             </p>
                           </div>
-                          <form className="mx-4">
+                          <form className='mx-4'>
                             <div className='mt-6 grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6'>
                               <div className='sm:col-span-6'>
                                 <label
@@ -127,8 +127,7 @@ const Post = ({ open, setOpen }) => {
                                   </div>
                                 </div>
                               </div>
-
-                              <div className='sm:col-span-6'>
+                              <div className='sm:col-span-3'>
                                 <label
                                   htmlFor='price'
                                   className='block text-sm font-medium text-gray-700'
@@ -144,8 +143,7 @@ const Post = ({ open, setOpen }) => {
                                   />
                                 </div>
                               </div>
-
-                              <div className='sm:col-span-6'>
+                              <div className='sm:col-span-3'>
                                 <label
                                   htmlFor='price'
                                   className='block text-sm font-medium text-gray-700'
@@ -161,15 +159,10 @@ const Post = ({ open, setOpen }) => {
                                   />
                                 </div>
                               </div>
-
-
                             </div>
                           </form>
-
                         </div>
                       </div>
-
-
 
                       <div className='pt-5'>
                         <div className='flex justify-end'>

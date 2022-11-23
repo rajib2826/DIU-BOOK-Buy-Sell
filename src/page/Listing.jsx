@@ -46,7 +46,13 @@ const Listing = () => {
                             scope='col'
                             className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
                           >
-                            Description
+                            Category
+                          </th>
+                          <th
+                            scope='col'
+                            className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
+                          >
+                            Quantity
                           </th>
                           <th
                             scope='col'
@@ -93,6 +99,9 @@ const Listing = () => {
                               </div>
                             </td>
                             <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
+                              <div className='text-gray-900'>1</div>
+                            </td>
+                            <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
                               <span
                                 className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
                                   item?.status === 'Sold'
@@ -100,7 +109,7 @@ const Listing = () => {
                                     : 'text-red-600 bg-red-50'
                                 } `}
                               >
-                                Active
+                                Available
                               </span>
                             </td>
                             <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-600'>
