@@ -8,6 +8,8 @@ import Books from './page/Books';
 import BookDetails from './page/BookDetails';
 import Listing from './page/Listing';
 import Profile from './page/Profile';
+import Checkout from './page/Checkout';
+import Order from './page/Order';
 
 const App = () => {
   return (
@@ -18,6 +20,8 @@ const App = () => {
         <Route path='/signup' element={<Registration />} />
         <Route path='/books' element={<Books />} />
         <Route path='/book-details' element={<BookDetails />} />
+        <Route path='/checkout' element={<Checkout />} />
+        <Route path='/order' element={<Order />} />
         <Route path='/listing' element={<Listing />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='*' element={<NotFound />} />

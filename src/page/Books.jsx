@@ -60,14 +60,15 @@ const Books = () => {
                       className='absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black opacity-50'
                     />
                     <p className='relative text-lg font-semibold text-white'>
-                      <span className='text-2xl font-bold'>৳</span> {product.price}
+                      <span className='text-2xl font-bold'>৳</span>{' '}
+                      {product.price}
                     </p>
                   </div>
                 </div>
                 <div className='mt-6'>
                   <Link
                     to={product.href}
-                    className='relative flex items-center justify-center rounded-md border border-transparent bg-gray-100 py-2 px-8 text-sm font-medium text-gray-900 hover:bg-gray-200'
+                    className='relative flex items-center justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-8 text-sm font-medium text-gray-100 hover:bg-indigo-700'
                   >
                     View Details
                   </Link>
@@ -76,7 +77,7 @@ const Books = () => {
             ))}
           </div>
         </div>
-      </div >
+      </div>
       <Footer />
     </>
   );

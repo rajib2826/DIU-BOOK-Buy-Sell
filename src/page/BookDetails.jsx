@@ -1,7 +1,7 @@
 import React from 'react';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import { FlagIcon } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/Layout/Footer';
 import Navbar from '../components/Layout/Navbar';
 import { BsFacebook, BsWhatsapp, BsLinkedin } from 'react-icons/bs';
@@ -35,6 +35,8 @@ function classNames(...classes) {
 }
 
 const BookDetails = () => {
+  const navigate = useNavigate();
+
   return (
     <>
       <Navbar />
@@ -181,12 +183,21 @@ const BookDetails = () => {
                 </div>
 
                 <div className='mt-10'>
-                  <button
-                    type='submit'
-                    className='flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50'
-                  >
-                    Buy Book
-                  </button>
+                  <div className=' sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3'>
+                    <button
+                      type='button'
+                      className='flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50'
+                      onClick={() => navigate('/checkout')}
+                    >
+                      Buy Book
+                    </button>
+                    <button
+                      type='button'
+                      className='flex w-full items-center justify-center rounded-md border border-transparent bg-gray-600 py-3 px-8 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50'
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
                 </div>
                 <div className='mt-6 text-center'>
                   <a
