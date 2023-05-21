@@ -1,6 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
     <section>
       <div className='pt-16 pb-80 sm:pt-24 sm:pb-40 lg:pt-40 lg:pb-48'>
@@ -82,12 +85,12 @@ const Hero = () => {
                 </div>
               </div>
 
-              <a
-                href='#'
+              <button
+                onClick={() => navigate('/books')}
                 className='inline-block rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-center font-medium text-white hover:bg-indigo-700'
               >
                 View Books
-              </a>
+              </button>
             </div>
           </div>
         </div>

@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const NotFound = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <section className='flex items-center h-full pt-28'>
       <div className='container flex flex-col items-center justify-center px-5 mx-auto my-8'>

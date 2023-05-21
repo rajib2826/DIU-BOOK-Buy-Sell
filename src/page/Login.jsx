@@ -1,18 +1,79 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { useAuth } from '../components/Auth/AuthContext';
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { login, setJWTToken, signInWithGoogle } = useAuth();
+
+  const {
+    register: registerSignIn,
+    handleSubmit: handleSignIn,
+    formState: { errors },
+  } = useForm();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handleResponse = (res) => {
+    setJWTToken();
+    toast.success('Sign in Successful');
+    navigate('/books');
+  };
+
+  // Google Sign In
+  const googleSignIn = () => {
+    const loading = toast.loading('Please wait a moment...');
+    signInWithGoogle()
+      .then((res) => {
+        toast.dismiss(loading);
+        if (res === null || res === undefined) {
+          toast.error('Not registered yet! Please register first.');
+          return;
+        }
+        handleResponse(res);
+      })
+      .catch((err) => {
+        toast.dismiss(loading);
+        let message = err.code.split('auth/')[1].replace(/-/g, ' ');
+        toast.error(message.charAt(0).toUpperCase() + message.slice(1));
+      });
+  };
+
+  // Sign In with Email and Password
+  const onSubmit = (data) => {
+    const loading = toast.loading('Please wait a moment...');
+    const { email, password } = data;
+
+    // For Login
+    if (email && password) {
+      login(email.toLowerCase(), password)
+        .then((res) => {
+          toast.dismiss(loading);
+          handleResponse(res);
+        })
+        .catch((err) => {
+          toast.dismiss(loading);
+          let message = err.code.split('auth/')[1].replace(/-/g, ' ');
+          toast.error(message.charAt(0).toUpperCase() + message.slice(1));
+        });
+    }
+  };
+
   return (
     <div className='flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8'>
       <div className='sm:mx-auto sm:w-full sm:max-w-md'>
         <Link to='/'>
           <img
             className='mx-auto h-12 w-auto'
-            src="https://i.ibb.co/YytpcVr/logo-image-removebg-preview.png"
+            src='https://i.ibb.co/YytpcVr/logo-image-removebg-preview.png'
             alt='Your Company'
           />
         </Link>
-        <h2 className='mt-6 text-center text-3xl font-bold tracking-tight text-gray-900'>
+        <h2 className='mt-6 text-center text-3xl font-semibold tracking-tight text-gray-900'>
           Sign in to your account
         </h2>
         <p className='mt-2 text-center text-sm text-gray-600'>
@@ -28,7 +89,7 @@ const Login = () => {
 
       <div className='mt-8 sm:mx-auto sm:w-full sm:max-w-md'>
         <div className='bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10'>
-          <form className='space-y-6' action='#' method='POST'>
+          <form className='space-y-6' onSubmit={handleSignIn(onSubmit)}>
             <div>
               <label
                 htmlFor='email'
@@ -38,14 +99,26 @@ const Login = () => {
               </label>
               <div className='mt-1'>
                 <input
-                  id='email'
-                  name='email'
+                  {...registerSignIn('email', {
+                    required: 'Email is required',
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                      message: 'Invalid email address',
+                    },
+                  })}
+                  className={`block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm  focus:outline-none sm:text-sm ${
+                    errors?.email
+                      ? 'focus:border-red-500 focus:ring-red-500'
+                      : 'focus:border-indigo-500 focus:ring-indigo-500'
+                  }`}
                   type='email'
-                  autoComplete='email'
-                  required
-                  className='block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm'
+                  placeholder='Ex. james15-1234@diu.edu.bd'
+                  name='email'
                 />
               </div>
+              <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
+                {errors?.email?.message}
+              </span>
             </div>
 
             <div>
@@ -57,14 +130,28 @@ const Login = () => {
               </label>
               <div className='mt-1'>
                 <input
-                  id='password'
-                  name='password'
+                  {...registerSignIn('password', {
+                    required: 'Password is required',
+                    pattern: {
+                      value:
+                        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&;:`"'%<,>./?~^-_=+])[A-Za-z\d@$!%*#?&;:`"'%<,>./?~^-_=+]{8,}$/i,
+                      message:
+                        'Minimum eight characters, at least one letter, one number and one special character',
+                    },
+                  })}
+                  className={`block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm  focus:outline-none sm:text-sm ${
+                    errors?.password
+                      ? 'focus:border-red-500 focus:ring-red-500'
+                      : 'focus:border-indigo-500 focus:ring-indigo-500'
+                  }`}
                   type='password'
-                  autoComplete='current-password'
-                  required
-                  className='block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm'
+                  placeholder='••••••••'
+                  name='password'
                 />
               </div>
+              <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
+                {errors?.password?.message}
+              </span>
             </div>
 
             <div className='flex items-center justify-between'>
@@ -94,12 +181,11 @@ const Login = () => {
             </div>
 
             <div>
-              <button
+              <input
                 type='submit'
                 className='flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-              >
-                Sign in
-              </button>
+                value='Sign in'
+              />
             </div>
           </form>
 
@@ -116,11 +202,11 @@ const Login = () => {
             </div>
 
             <div>
-              <a
-                href='#'
-                class='flex items-center justify-center px-6 py-3 mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg hover:bg-gray-50'
+              <div
+                onClick={googleSignIn}
+                className='flex items-center justify-center px-6 py-3 mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg hover:bg-gray-50'
               >
-                <svg class='w-6 h-6 mx-2' viewBox='0 0 40 40'>
+                <svg className='w-6 h-6 mx-2' viewBox='0 0 40 40'>
                   <path
                     d='M36.3425 16.7358H35V16.6667H20V23.3333H29.4192C28.045 27.2142 24.3525 30 20 30C14.4775 30 10 25.5225 10 20C10 14.4775 14.4775 9.99999 20 9.99999C22.5492 9.99999 24.8683 10.9617 26.6342 12.5325L31.3483 7.81833C28.3717 5.04416 24.39 3.33333 20 3.33333C10.7958 3.33333 3.33335 10.7958 3.33335 20C3.33335 29.2042 10.7958 36.6667 20 36.6667C29.2042 36.6667 36.6667 29.2042 36.6667 20C36.6667 18.8825 36.5517 17.7917 36.3425 16.7358Z'
                     fill='#FFC107'
@@ -139,8 +225,8 @@ const Login = () => {
                   />
                 </svg>
 
-                <span class='mx-2'>Sign in with Google</span>
-              </a>
+                <span className='mx-2'>Sign in with Google</span>
+              </div>
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Home from './page/Home';
 import './App.css';
 import Login from './page/Login';
@@ -8,24 +9,45 @@ import Books from './page/Books';
 import BookDetails from './page/BookDetails';
 import Listing from './page/Listing';
 import Profile from './page/Profile';
-import Checkout from './page/Checkout';
-import Order from './page/Order';
+import AuthContextProvider from './components/Auth/AuthContext';
+import withPublicRoute from './components/Auth/PublicRoute';
+import withPrivateRoute from './components/Auth/PrivateRoute';
+import Orders from './page/Orders';
+
+// Wrap components with the HOCs
+const PublicLogin = withPublicRoute(Login);
+const PublicRegistration = withPublicRoute(Registration);
+const PrivateBooks = withPrivateRoute(Books);
+const PrivateBookDetails = withPrivateRoute(BookDetails);
+const PrivateListing = withPrivateRoute(Listing);
+const PrivateOrders = withPrivateRoute(Orders);
+const PrivateProfile = withPrivateRoute(Profile);
 
 const App = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/signup' element={<Registration />} />
-        <Route path='/books' element={<Books />} />
-        <Route path='/book-details' element={<BookDetails />} />
-        <Route path='/checkout' element={<Checkout />} />
-        <Route path='/order' element={<Order />} />
-        <Route path='/listing' element={<Listing />} />
-        <Route path='/profile' element={<Profile />} />
-        <Route path='*' element={<NotFound />} />
-      </Routes>
+      <AuthContextProvider>
+        {/* Toast Notification */}
+        <Toaster
+          toastOptions={{
+            duration: 3000,
+          }}
+        />
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/login' element={<PublicLogin />} />
+          <Route path='/signup' element={<PublicRegistration />} />
+          <Route path='/books' element={<PrivateBooks />} />
+          <Route
+            path='/book-details/:listingId'
+            element={<PrivateBookDetails />}
+          />
+          <Route path='/listing' element={<PrivateListing />} />
+          <Route path='/orders' element={<PrivateOrders />} />
+          <Route path='/profile' element={<PrivateProfile />} />
+          <Route path='*' element={<NotFound />} />
+        </Routes>
+      </AuthContextProvider>
     </BrowserRouter>
   );
 };

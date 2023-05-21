@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Category from '../components/Home/Category';
 import Delivery from '../components/Home/Delivery';
 import Featured from '../components/Home/Featured';
@@ -8,12 +8,16 @@ import Footer from '../components/Layout/Footer';
 import Navbar from '../components/Layout/Navbar';
 
 const Home = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <>
-      <heder className='relative overflow-hidden'>
+      <header className='relative overflow-hidden mt-10'>
         <Navbar />
         <Hero />
-      </heder>
+      </header>
       <main>
         <Category />
         <div className='relative overflow-hidden'>
