@@ -205,11 +205,10 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                                         message: 'Book name minimum 2 words',
                                       },
                                     })}
-                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${
-                                      errors.name
-                                        ? 'focus:border-red-500 focus:ring-red-500'
-                                        : 'focus:border-indigo-500 focus:ring-indigo-500'
-                                    } `}
+                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${errors.name
+                                      ? 'focus:border-red-500 focus:ring-red-500'
+                                      : 'focus:border-indigo-500 focus:ring-indigo-500'
+                                      } `}
                                   />
                                 </div>
                                 <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
@@ -238,11 +237,10 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                                           'Book description minimum 3 words',
                                       },
                                     })}
-                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${
-                                      errors.description
-                                        ? 'focus:border-red-500 focus:ring-red-500'
-                                        : 'focus:border-indigo-500 focus:ring-indigo-500'
-                                    } `}
+                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${errors.description
+                                      ? 'focus:border-red-500 focus:ring-red-500'
+                                      : 'focus:border-indigo-500 focus:ring-indigo-500'
+                                      } `}
                                   />
                                   <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
                                     {errors?.description?.message}
@@ -343,11 +341,10 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                                     {...registerPost('quantity', {
                                       required: 'Book quantity is required',
                                     })}
-                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${
-                                      errors.quantity
-                                        ? 'focus:border-red-500 focus:ring-red-500'
-                                        : 'focus:border-indigo-500 focus:ring-indigo-500'
-                                    } `}
+                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${errors.quantity
+                                      ? 'focus:border-red-500 focus:ring-red-500'
+                                      : 'focus:border-indigo-500 focus:ring-indigo-500'
+                                      } `}
                                   />
                                 </div>
                                 <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
@@ -371,11 +368,10 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                                       required:
                                         'Book original price is required',
                                     })}
-                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${
-                                      errors.originalPrice
-                                        ? 'focus:border-red-500 focus:ring-red-500'
-                                        : 'focus:border-indigo-500 focus:ring-indigo-500'
-                                    } `}
+                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${errors.originalPrice
+                                      ? 'focus:border-red-500 focus:ring-red-500'
+                                      : 'focus:border-indigo-500 focus:ring-indigo-500'
+                                      } `}
                                   />
                                 </div>
                                 <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
@@ -399,11 +395,10 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                                       required:
                                         'Book selling price is required',
                                     })}
-                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${
-                                      errors.sellingPrice
-                                        ? 'focus:border-red-500 focus:ring-red-500'
-                                        : 'focus:border-indigo-500 focus:ring-indigo-500'
-                                    } `}
+                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${errors.sellingPrice
+                                      ? 'focus:border-red-500 focus:ring-red-500'
+                                      : 'focus:border-indigo-500 focus:ring-indigo-500'
+                                      } `}
                                   />
                                 </div>
                                 <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
