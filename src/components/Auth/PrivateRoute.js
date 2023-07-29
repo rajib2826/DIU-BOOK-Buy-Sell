@@ -12,6 +12,10 @@ const withPrivateRoute = (Component) => {
       if (!currentUser && !localStorage.getItem('token')) {
         navigate('/login', { replace: true });
       }
+
+      if (currentUser && currentUser?.emailVerified === false) {
+        navigate('/verification', { replace: true });
+      }
     }, [currentUser, navigate]);
 
     return currentUser || localStorage.getItem('token') ? (

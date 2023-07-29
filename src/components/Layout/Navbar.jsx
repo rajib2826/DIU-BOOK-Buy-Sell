@@ -1,15 +1,29 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useContext, useState } from 'react';
 import { Dialog, Popover, Menu, Transition } from '@headlessui/react';
 import { Link } from 'react-router-dom';
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
   XMarkIcon,
+  ShoppingBagIcon,
 } from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import navigation from '../../data/navigation';
 import Post from '../../page/Post';
 import { useAuth } from '../Auth/AuthContext';
+import { StoreContext } from '../Context/StoreContext';
+import Cart from '../../page/Cart';
+
+const userNavigation = [
+  { name: 'Dashboard', href: '/dashboard' },
+  { name: 'My Orders', href: '/order-history' },
+  { name: 'My Favorites', href: '/favorites' },
+  { name: 'My Reviews', href: '/reviews' },
+  { name: 'My Account', href: '/profile' },
+  { name: 'My Listing', href: '/listing' },
+  { name: 'Order Request', href: '/orders' },
+  { name: 'Payments History', href: '/payments' },
+  { name: 'Community', href: '/community' },
+];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -18,8 +32,9 @@ function classNames(...classes) {
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [postOpen, setPostOpen] = useState(false);
+  const [openCart, setOpenCart] = useState(false);
   const [isSticky, setSticky] = useState(false);
-
+  const { cart } = useContext(StoreContext);
   const { currentUser, logout } = useAuth();
 
   window.addEventListener('scroll', () => {
@@ -34,6 +49,8 @@ const Navbar = () => {
     <>
       {/* Post Modal */}
       <Post open={postOpen} setOpen={setPostOpen} />
+      {/* Cart Modal */}
+      {<Cart open={openCart} setOpen={setOpenCart} />}
 
       <div className='mb-10'>
         <header
@@ -81,44 +98,47 @@ const Navbar = () => {
                         <XMarkIcon className='h-6 w-6' aria-hidden='true' />
                       </button>
                     </div>
+                    {currentUser?.email && (
+                      <div className='space-y-6 border-t border-gray-200 py-6 px-4'>
+                        <div className='flow-root'>
+                          <Link
+                            to='/books'
+                            className='-m-2 block p-2 font-medium text-gray-900'
+                          >
+                            Books
+                          </Link>
+                        </div>
+                        <div
+                          className='flow-root cursor-pointer'
+                          onClick={() => setPostOpen(true)}
+                        >
+                          <span className='-m-2 block p-2 font-medium text-gray-900'>
+                            Post
+                          </span>
+                        </div>
+                      </div>
+                    )}
 
-                    <div className='space-y-6 border-t border-gray-200 py-6 px-4'>
-                      <div className='flow-root'>
-                        <Link
-                          to='/books'
-                          className='-m-2 block p-2 font-medium text-gray-900'
-                        >
-                          Books
-                        </Link>
+                    {!currentUser?.email && (
+                      <div className='space-y-6 border-t border-gray-200 py-6 px-4'>
+                        <div className='flow-root'>
+                          <Link
+                            to='/login'
+                            className='-m-2 block p-2 font-medium text-gray-900'
+                          >
+                            Sign in
+                          </Link>
+                        </div>
+                        <div className='flow-root'>
+                          <Link
+                            to='/signup'
+                            className='-m-2 block p-2 font-medium text-gray-900'
+                          >
+                            Create account
+                          </Link>
+                        </div>
                       </div>
-                      <div
-                        className='flow-root cursor-pointer'
-                        onClick={() => setPostOpen(true)}
-                      >
-                        <span className='-m-2 block p-2 font-medium text-gray-900'>
-                          Post
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className='space-y-6 border-t border-gray-200 py-6 px-4'>
-                      <div className='flow-root'>
-                        <Link
-                          to='/login'
-                          className='-m-2 block p-2 font-medium text-gray-900'
-                        >
-                          Sign in
-                        </Link>
-                      </div>
-                      <div className='flow-root'>
-                        <Link
-                          to='/signup'
-                          className='-m-2 block p-2 font-medium text-gray-900'
-                        >
-                          Create account
-                        </Link>
-                      </div>
-                    </div>
+                    )}
                   </Dialog.Panel>
                 </Transition.Child>
               </div>
@@ -154,28 +174,30 @@ const Navbar = () => {
                         alt=''
                       />
                       <span className='text-indigo-800 text-md sm:text-lg font-semibold'>
-                        DIU Book Buy/Sell
+                        D-Book Shop
                       </span>
                     </Link>
                   </div>
 
                   {/* Flyout menus */}
-                  <Popover.Group className='hidden lg:ml-8 lg:block lg:self-stretch'>
-                    <div className='flex h-full space-x-8'>
-                      <Link
-                        to='/books'
-                        className='flex items-center  font-medium text-gray-700 hover:text-gray-800'
-                      >
-                        Books
-                      </Link>
-                      <span
-                        className='flex items-center  font-medium text-gray-700 hover:text-gray-800 cursor-pointer'
-                        onClick={() => setPostOpen(true)}
-                      >
-                        Post
-                      </span>
-                    </div>
-                  </Popover.Group>
+                  {currentUser?.email && (
+                    <Popover.Group className='hidden lg:ml-8 lg:block lg:self-stretch'>
+                      <div className='flex h-full space-x-8'>
+                        <Link
+                          to='/books'
+                          className='flex items-center  font-medium text-gray-700 hover:text-gray-800'
+                        >
+                          Books
+                        </Link>
+                        <span
+                          className='flex items-center  font-medium text-gray-700 hover:text-gray-800 cursor-pointer'
+                          onClick={() => setPostOpen(true)}
+                        >
+                          Post
+                        </span>
+                      </div>
+                    </Popover.Group>
+                  )}
 
                   <div className='ml-auto flex items-center'>
                     {!currentUser?.email && (
@@ -200,18 +222,37 @@ const Navbar = () => {
                     )}
 
                     {/* Search */}
-                    <div className='flex lg:ml-6'>
-                      <a
-                        href='#'
-                        className='p-2 text-gray-400 hover:text-gray-500'
+                    {currentUser?.email && (
+                      <div className='flex sm:ml-6'>
+                        <Link
+                          to='/books'
+                          className='p-2 text-gray-400 hover:text-gray-500'
+                        >
+                          <span className='sr-only'>Search</span>
+                          <MagnifyingGlassIcon
+                            className='h-6 w-6'
+                            aria-hidden='true'
+                          />
+                        </Link>
+                      </div>
+                    )}
+
+                    {/* Cart */}
+                    {currentUser?.email && (
+                      <div
+                        className='flex group ml-2 sm:ml-6 sm:mr-4 cursor-pointer'
+                        onClick={() => setOpenCart(true)}
                       >
-                        <span className='sr-only'>Search</span>
-                        <MagnifyingGlassIcon
-                          className='h-6 w-6'
+                        <ShoppingBagIcon
+                          className='h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500'
                           aria-hidden='true'
                         />
-                      </a>
-                    </div>
+                        <span className='sr-only'>Cart</span>
+                        <span className='ml-2 text-base font-semibold text-gray-600 group-hover:text-gray-800'>
+                          {cart?.length}
+                        </span>
+                      </div>
+                    )}
 
                     {/* Profile dropdown */}
                     {currentUser?.email && (
@@ -245,45 +286,21 @@ const Navbar = () => {
                           leaveTo='transform opacity-0 scale-95'
                         >
                           <Menu.Items className='absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <Link
-                                  to='/profile'
-                                  className={classNames(
-                                    active ? 'bg-gray-100' : '',
-                                    'block px-4 py-2  text-gray-700'
-                                  )}
-                                >
-                                  Profile
-                                </Link>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <Link
-                                  to='/listing'
-                                  className={classNames(
-                                    active ? 'bg-gray-100' : '',
-                                    'block px-4 py-2  text-gray-700'
-                                  )}
-                                >
-                                  Listing
-                                </Link>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <Link
-                                  to='/orders'
-                                  className={classNames(
-                                    active ? 'bg-gray-100' : '',
-                                    'block px-4 py-2  text-gray-700'
-                                  )}
-                                >
-                                  Orders
-                                </Link>
-                              )}
-                            </Menu.Item>
+                            {userNavigation?.map((item) => (
+                              <Menu.Item key={item?.name}>
+                                {({ active }) => (
+                                  <Link
+                                    to={item?.href}
+                                    className={classNames(
+                                      active ? 'bg-gray-100' : '',
+                                      'block px-4 py-2  text-gray-700'
+                                    )}
+                                  >
+                                    {item?.name}
+                                  </Link>
+                                )}
+                              </Menu.Item>
+                            ))}
                             <Menu.Item>
                               {({ active }) => (
                                 <Link

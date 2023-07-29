@@ -1,56 +1,68 @@
-import React, { useEffect, useState } from 'react';
-import {
-  deleteDoc,
-  doc,
-  collection,
-  onSnapshot,
-  query,
-  where,
-} from 'firebase/firestore';
-import Footer from '../components/Layout/Footer';
-import Navbar from '../components/Layout/Navbar';
-import Post from './Post';
+import React, { useContext, useEffect, useState } from 'react';
+import { StoreContext } from '../components/Context/StoreContext';
 import { useAuth } from '../components/Auth/AuthContext';
-import { db } from '../firebaseConfig';
-import { toast } from 'react-hot-toast';
+import { PencilIcon, PencilSquareIcon } from '@heroicons/react/20/solid';
+import EditOrderRequest from './EditOrderRequest';
 
 const Orders = () => {
+  const { orderLoading, orderBooks } = useContext(StoreContext);
   const { loggedInUser } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [orderBooks, setOrderBooks] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState('');
+  const [editModal, setEditModal] = useState(false);
 
-  // get users order books
   useEffect(() => {
-    if (loggedInUser) {
-      setLoading(true);
-      const unsubscribe = onSnapshot(
-        query(
-          collection(db, 'orders'),
-          where('sellerEmail', '==', loggedInUser?.email)
-        ),
-        (snapshot) => {
-          const orderBooks = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setOrderBooks(orderBooks);
-          setLoading(false);
-        },
-        (err) => {
-          setLoading(false);
-          toast.error(err.message);
-        }
-      );
-      return () => unsubscribe();
-    }
-  }, [loggedInUser]);
+    window.scrollTo(0, 0);
+  }, []);
+
+  const orders = orderBooks
+    ?.map((order) =>
+      order?.books
+        ?.filter((book) => book?.sellerEmail === loggedInUser?.email)
+        .map((item) => ({
+          books: {
+            listingId: item?.listingId,
+            bookCover: item?.bookCover,
+            name: item?.name,
+            quantity: item?.quantity,
+            sellingPrice: item?.sellingPrice,
+            department: item?.sellerDepartment,
+          },
+          seller: {
+            sellerName: item?.sellerName,
+            sellerEmail: item?.sellerEmail,
+            sellerDepartment: item?.sellerDepartment,
+            sellerPhoto: item?.sellerPhoto,
+            sellerPhone: item?.sellerPhone,
+            sellerAddress: item?.sellerAddress,
+          },
+          customer: order?.customer,
+          delivery: order?.delivery,
+          order: {
+            orderId: order?.orderId,
+            orderDate: new Date(
+              order?.timestamp?.seconds * 1000
+            )?.toLocaleDateString('en-GB'),
+            orderStatus: order?.status,
+            orderPaid: order?.paid,
+            orderTotal: order?.total,
+          },
+        }))
+    )
+    ?.flat();
 
   return (
     <>
-      <Navbar />
+      {/* Edit Order Modal */}
+      {editModal && (
+        <EditOrderRequest
+          setEditModal={setEditModal}
+          selectedOrder={selectedOrder}
+        />
+      )}
+
       <div className='bg-white'>
-        <div className='mx-auto max-w-7xl pt-10 pb-16 px-4 sm:px-6 lg:px-8'>
-          <div className='px-4 sm:px-6 lg:px-8'>
+        <div className='mx-auto max-w-7xl pt-6 pb-16 px-4 sm:px-6 lg:px-8'>
+          <div>
             <div className='sm:flex sm:items-center'>
               <div className='sm:flex-auto'>
                 <h1 className='text-2xl font-semibold text-gray-900'>Orders</h1>
@@ -83,12 +95,6 @@ const Orders = () => {
                             scope='col'
                             className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
                           >
-                            Quantity
-                          </th>
-                          <th
-                            scope='col'
-                            className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
-                          >
                             Buyer Name
                           </th>
                           <th
@@ -101,18 +107,28 @@ const Orders = () => {
                             scope='col'
                             className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
                           >
-                            Buyer Address
+                            Order Placed
                           </th>
+                          <th
+                            scope='col'
+                            className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
+                          >
+                            Status
+                          </th>
+                          <th
+                            scope='col'
+                            className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
+                          />
                         </tr>
                       </thead>
                       <tbody className='divide-y divide-gray-200 bg-white'>
-                        {loading && (
+                        {orderLoading && (
                           <tr>
                             <td className='whitespace-nowrap py-4'>
                               <div className='flex items-center'>
                                 <img
                                   className='w-16 ml-8'
-                                  src='https://media.tenor.com/On7kvXhzml4AAAAj/loading-gif.gif'
+                                  src='https://media.tenor.com/On7kvXhzml4AAAAj/orderLoading-gif.gif'
                                   alt=''
                                 />
                               </div>
@@ -120,34 +136,32 @@ const Orders = () => {
                           </tr>
                         )}
 
-                        {!loading &&
-                          orderBooks?.length > 0 &&
-                          orderBooks?.map((item) => (
-                            <tr key={item?.orderId}>
+                        {!orderLoading &&
+                          orders?.length > 0 &&
+                          orders?.map((item) => (
+                            <tr key={item?.order?.orderId}>
                               <td className='whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6'>
                                 <div className='flex items-center'>
                                   <div className='h-10 w-10 flex-shrink-0'>
                                     <img
                                       className='h-10 w-10 rounded-lg'
-                                      src={item?.bookCover}
+                                      src={item?.books?.bookCover}
                                       alt=''
                                     />
                                   </div>
                                   <div className='ml-4'>
                                     <div className='font-medium text-gray-900'>
-                                      {item?.name}
+                                      {item?.books?.name}
                                     </div>
                                   </div>
                                 </div>
                               </td>
                               <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
                                 <div className='text-gray-900'>
-                                  {item?.sellingPrice}
-                                </div>
-                              </td>
-                              <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
-                                <div className='text-gray-900'>
-                                  {item?.quantity}
+                                  <span className='text-base mr-1 font-bold'>
+                                    ৳
+                                  </span>{' '}
+                                  {item?.books?.sellingPrice}
                                 </div>
                               </td>
                               <td className='whitespace-nowrap py-4 pr-3 text-sm'>
@@ -155,27 +169,57 @@ const Orders = () => {
                                   <div className='h-10 w-10 flex-shrink-0'>
                                     <img
                                       className='h-10 w-10 rounded-lg'
-                                      src={item?.buyerPhoto}
+                                      src={item?.customer?.photo}
                                       alt=''
                                     />
                                   </div>
                                   <div className='ml-4'>
                                     <div className='font-medium text-gray-900'>
-                                      {item?.buyerName}
+                                      {item?.customer?.name}
                                     </div>
                                   </div>
                                 </div>
                               </td>
                               <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-600'>
-                                {item?.buyerPhone}
+                                {item?.delivery?.phone}
                               </td>
                               <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-600'>
-                                {item?.buyerAddress}
+                                {item?.order?.orderDate}
+                              </td>
+                              <td
+                                className={`whitespace-nowrap px-3 py-4 text-sm font-semibold ${
+                                  item?.order?.orderStatus === 'Order placed'
+                                    ? 'text-amber-600'
+                                    : item?.order?.orderStatus === 'Processing'
+                                    ? 'text-purple-500'
+                                    : item?.order?.orderStatus === 'Shipped'
+                                    ? 'text-cyan-500'
+                                    : item?.order?.orderStatus === 'Delivered'
+                                    ? 'text-green-600'
+                                    : item?.order?.orderStatus === 'Cancelled'
+                                    ? 'text-red-500'
+                                    : 'text-blue-500'
+                                }`}
+                              >
+                                {item?.order?.orderStatus}
+                              </td>
+                              <td className='whitespace-nowrap px-3 py-6 text-sm flex justify-start items-center'>
+                                <button
+                                  type='button'
+                                  onClick={() => {
+                                    setSelectedOrder(item?.order?.orderId);
+                                    setEditModal(true);
+                                  }}
+                                  className='flex text-indigo-500 hover:text-indigo-600 font-semibold'
+                                >
+                                  <PencilSquareIcon className='h-5 w-5 mr-1' />{' '}
+                                  Update
+                                </button>
                               </td>
                             </tr>
                           ))}
 
-                        {!loading && orderBooks?.length === 0 && (
+                        {!orderLoading && orderBooks?.length === 0 && (
                           <tr>
                             <td className='whitespace-nowrap py-4 pl-4 pr-3'>
                               <div className='flex items-center'>
@@ -195,7 +239,6 @@ const Orders = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

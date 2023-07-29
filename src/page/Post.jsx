@@ -6,13 +6,26 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { getBase64URL, resizeImg } from '../components/utils/imageFn';
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
-const Post = ({ open, setOpen, bookDetails = {} }) => {
+const Post = ({
+  open,
+  setOpen,
+  bookDetails = {},
+  setBookDetails = () => {},
+}) => {
   const { loggedInUser } = useAuth();
   const navigate = useNavigate();
-  const [bookCover, setBookCover] = useState(null);
+  const [dragEnter, setDragEnter] = useState(false);
+  const [bookCover, setBookCover] = useState([]);
+
+  const {
+    register: registerPost,
+    handleSubmit: handlePost,
+    setValue,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -24,52 +37,112 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
     }
   }, [bookDetails]);
 
-  const {
-    register: registerPost,
-    handleSubmit: handlePost,
-    formState: { errors },
-  } = useForm();
-
-  // upload book cover
-  const onFileChange = async (e) => {
-    const file = e.target.files[0];
-    const loading = toast.loading('Photos uploading...');
-
-    try {
-      const base64URL = await getBase64URL(file);
-
-      // image resize
-      const blob = await resizeImg(base64URL, 1600, false);
-
-      let fileName = Math.floor(1000 + Math.random() * 9000) + '-' + file.name;
-
-      // create image file
-      const downloadURL = new File([blob], fileName, {
-        type: blob.type,
-      });
-
-      // upload images to imgBB
-      const imageData = new FormData();
-      imageData.set('key', `${process.env.REACT_APP_IMGBB_API}`);
-      imageData.append('image', downloadURL);
-
-      const res = await axios.post(
-        'https://api.imgbb.com/1/upload',
-        imageData,
-        {
-          headers: {
-            'content-type': 'multipart/form-data',
-          },
-        }
-      );
-      const imageURL = res.data.data.display_url;
-      setBookCover(imageURL);
-
-      toast.dismiss(loading);
-    } catch (error) {
-      toast.dismiss(loading);
-      toast.error(error.message);
+  useEffect(() => {
+    if (Object.keys(bookDetails).length > 0) {
+      setValue('name', bookDetails?.name || '');
+      setValue('description', bookDetails?.description || '');
+      setValue('originalPrice', bookDetails?.originalPrice || '');
+      setValue('sellingPrice', bookDetails?.sellingPrice || '');
+      setValue('quantity', bookDetails?.quantity || '');
     }
+  }, [bookDetails, setValue]);
+
+  // upload multiple images
+  const onFiles = async (files) => {
+    for (let file of files) {
+      const loading = toast.loading('Photos uploading...');
+      try {
+        const base64URL = await getBase64URL(file);
+
+        // image resize
+        const blob = await resizeImg(base64URL, 1600, false);
+
+        let fileName =
+          Math.floor(1000 + Math.random() * 9000) + '-' + file.name;
+
+        // create image file
+        const downloadURL = new File([blob], fileName, {
+          type: blob.type,
+        });
+
+        // upload images to imgBB
+        const imageData = new FormData();
+        imageData.set('key', `${process.env.REACT_APP_IMGBB_API}`);
+        imageData.append('image', downloadURL);
+
+        const res = await axios.post(
+          'https://api.imgbb.com/1/upload',
+          imageData,
+          {
+            headers: {
+              'content-type': 'multipart/form-data',
+            },
+          }
+        );
+        const imageId = res.data.data.id;
+        const imageURL = res.data.data.url;
+        const displayURL = res.data.data.display_url;
+
+        // update state
+        setBookCover((bookCover) => [
+          ...bookCover,
+          { id: imageId, url: imageURL, thumbnail: displayURL },
+        ]);
+
+        toast.dismiss(loading);
+      } catch (err) {
+        toast.dismiss(loading);
+        toast.error(err.message);
+      }
+    }
+  };
+
+  const handleRemoveImage = async (image, id) => {
+    // Delete the file
+    const newImages = bookCover?.filter((image, index) => index !== id);
+    setBookCover(newImages);
+
+    // get listing cover image
+    const docRef = doc(db, 'books', bookDetails?.listingId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      // remove image from gallery
+      const newBookImages = docSnap
+        ?.data()
+        ?.bookCover.filter((bookImage) => bookImage?.id !== image?.id);
+
+      const payload = {
+        bookCover: newBookImages,
+      };
+      // store user info on database
+      await setDoc(docRef, payload, { merge: true });
+    }
+  };
+
+  const handleFiles = (e) => {
+    onFiles(e.target.files);
+  };
+
+  const handleDragEnter = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setDragEnter(true);
+  };
+  const handleDragOver = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setDragEnter(true);
+  };
+  const handleDragLeave = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setDragEnter(false);
+  };
+  const handleDrop = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onFiles(e.dataTransfer.files);
   };
 
   // handle post
@@ -121,16 +194,56 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
           sellerAddress: loggedInUser?.address,
           sellerDob: loggedInUser?.dob,
           available: quantity > 0 ? true : false,
+          paid: false,
           timestamp: serverTimestamp(),
         };
 
         await setDoc(docRef, payload, { merge: true });
+
+        if (!bookDetails?.listingId) {
+          const loading = toast.loading('Please wait a moment...');
+          // send booking data to ssl commerz server for payment
+          axios
+            .post(
+              `${process.env.REACT_APP_API_URL}/makePayment`,
+              {
+                bookingId: listingId,
+                total_amount: parseInt(10, 10),
+                product_name: `1 book listed from ${loggedInUser?.department} dept for ${loggedInUser?.displayName}`,
+                product_category: `${loggedInUser?.department} department`,
+                cus_name: loggedInUser?.displayName,
+                cus_email: loggedInUser?.email,
+                cus_add1: loggedInUser?.address,
+                cus_phone: loggedInUser?.phone,
+                ship_name: loggedInUser?.displayName,
+                ship_add1: 'Dhaka',
+              },
+              {
+                headers: { 'Content-Type': 'application/json' },
+              }
+            )
+            .then((res) => {
+              toast.dismiss(loading);
+              console.log(res);
+              if (res?.data?.status === 'SUCCESS') {
+                window.open(res?.data?.url, '_blank');
+                navigate('/listing');
+              } else {
+                toast.error('Session timeout! Please try again.');
+              }
+            })
+            .catch((err) => {
+              toast.dismiss(loading);
+              toast.error(err?.message);
+            });
+        }
 
         toast.dismiss(loading);
         toast.success(
           `Book ${bookDetails?.listingId ? 'updated' : 'posted'} successfully!`
         );
         setOpen(false);
+        setBookDetails({});
         navigate('/listing');
       } catch (error) {
         toast.dismiss(loading);
@@ -141,7 +254,14 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as='div' className='relative z-40' onClose={setOpen}>
+      <Dialog
+        as='div'
+        className='relative z-40'
+        onClose={() => {
+          setOpen(false);
+          setBookDetails({});
+        }}
+      >
         <Transition.Child
           as={Fragment}
           enter='ease-out duration-300'
@@ -175,15 +295,20 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                       <div className='space-y-8 divide-y divide-gray-200'>
                         <div>
                           <div>
-                            <h3 className='text-lg font-medium leading-6 text-gray-900'>
+                            <h3 className='text-xl font-semibold leading-6 text-gray-900'>
                               Create a post for book sell
                             </h3>
                             <p className='mt-1 text-sm text-gray-500'>
                               This information will be displayed publicly so be
                               careful what you share.
                             </p>
+                            {!bookDetails?.listingId && (
+                              <p className='mt-1 text-sm text-indigo-600'>
+                                Per post 10 taka service charge will be applied.
+                              </p>
+                            )}
                           </div>
-                          <form className='mx-4'>
+                          <div className='mx-4'>
                             <div className='mt-6 grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6'>
                               <div className='sm:col-span-6'>
                                 <label
@@ -205,10 +330,11 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                                         message: 'Book name minimum 2 words',
                                       },
                                     })}
-                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${errors.name
-                                      ? 'focus:border-red-500 focus:ring-red-500'
-                                      : 'focus:border-indigo-500 focus:ring-indigo-500'
-                                      } `}
+                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${
+                                      errors.name
+                                        ? 'focus:border-red-500 focus:ring-red-500'
+                                        : 'focus:border-indigo-500 focus:ring-indigo-500'
+                                    } `}
                                   />
                                 </div>
                                 <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
@@ -237,10 +363,11 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                                           'Book description minimum 3 words',
                                       },
                                     })}
-                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${errors.description
-                                      ? 'focus:border-red-500 focus:ring-red-500'
-                                      : 'focus:border-indigo-500 focus:ring-indigo-500'
-                                      } `}
+                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${
+                                      errors.description
+                                        ? 'focus:border-red-500 focus:ring-red-500'
+                                        : 'focus:border-indigo-500 focus:ring-indigo-500'
+                                    } `}
                                   />
                                   <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
                                     {errors?.description?.message}
@@ -251,43 +378,24 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                                 </p>
                               </div>
 
+                              {/* Book Photo */}
                               <div className='sm:col-span-6'>
-                                <label
-                                  htmlFor='cover-photo'
-                                  className='block text-sm font-medium text-gray-700'
-                                >
-                                  Book photo
-                                </label>
-
-                                {bookCover ? (
-                                  <div className='mt-2 flex items-center'>
-                                    <img
-                                      className='inline-block object-cover object-center w-48 h-48 rounded-sm'
-                                      src={bookCover}
-                                      alt=''
-                                    />
-                                    <div className='ml-8 flex  cursor-pointer '>
-                                      <div className='relative cursor-pointer inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'>
-                                        <label
-                                          htmlFor='user-photo'
-                                          className='relative pointer-events-none'
-                                        >
-                                          <span className='text-sm font-semibold text-gray-100 tracking-wide cursor-pointer'>
-                                            Change
-                                          </span>
-                                        </label>
-                                        <input
-                                          id='user-photo'
-                                          name='user-photo'
-                                          type='file'
-                                          onChange={onFileChange}
-                                          className='absolute inset-0 w-full h-full opacity-0 cursor-pointer border-gray-300 rounded-md'
-                                        />
-                                      </div>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className='mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6'>
+                                <span className='text-gray-900 text-lg font-medium'>
+                                  Pictures of the Book
+                                </span>
+                                <div className='mt-5'>
+                                  <label
+                                    className={`mt-1 flex justify-center px-6 py-20 border-2 ${
+                                      dragEnter
+                                        ? 'border-blue-500'
+                                        : 'border-gray-300'
+                                    } border-dashed rounded-md`}
+                                    htmlFor='images-upload'
+                                    onDragEnter={handleDragEnter}
+                                    onDragLeave={handleDragLeave}
+                                    onDragOver={handleDragOver}
+                                    onDrop={handleDrop}
+                                  >
                                     <div className='space-y-1 text-center'>
                                       <svg
                                         className='mx-auto h-12 w-12 text-gray-400'
@@ -298,33 +406,83 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                                       >
                                         <path
                                           d='M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02'
-                                          strokeWidth={2}
+                                          strokeWidth='2'
                                           strokeLinecap='round'
                                           strokeLinejoin='round'
-                                        />
+                                        ></path>
                                       </svg>
-                                      <div className='flex text-sm text-gray-600'>
+                                      <div className='flex text-sm text-gray-700'>
                                         <label
-                                          htmlFor='file-upload'
-                                          className='relative mx-auto cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500'
+                                          htmlFor='images-upload'
+                                          className='relative cursor-pointer rounded-md font-semibold text-blue-600 hover:text-blue-700 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500'
                                         >
-                                          <span>Upload a file</span>
+                                          <span>Upload multiple photos</span>
                                           <input
-                                            id='file-upload'
-                                            name='file-upload'
+                                            onChange={handleFiles}
                                             type='file'
+                                            multiple
+                                            name='images-upload'
+                                            id='images-upload'
                                             className='sr-only'
-                                            onChange={onFileChange}
                                           />
                                         </label>
+                                        <p className='pl-1 font-semibold'>
+                                          or drag and drop
+                                        </p>
                                       </div>
-                                      <p className='text-xs text-gray-500'>
+                                      <p className='text-xs text-gray-600'>
+                                        Each pictures size minimum 10KB
+                                      </p>
+                                      <p className='text-xs text-gray-600'>
                                         PNG, JPG, GIF up to 10MB
                                       </p>
                                     </div>
-                                  </div>
-                                )}
+                                  </label>
+                                </div>
                               </div>
+
+                              {/* Preview multiple images */}
+                              {bookCover?.length > 0 && (
+                                <div className='sm:col-span-6 mx-auto mb-2'>
+                                  <div className='space-y-2 sm:space-y-0 grid gap-4 sm:gap-5 grid-cols-2 sm:grid-cols-3'>
+                                    {bookCover?.map((image, index) => (
+                                      <div key={index}>
+                                        <div className='relative rounded overflow-hidden'>
+                                          <img
+                                            alt=''
+                                            className='object-cover object-center w-full h-full shadow-3xl hover:opacity-95'
+                                            src={image?.thumbnail}
+                                          />
+
+                                          {/* Remove photo */}
+                                          <span
+                                            className='absolute top-0 cursor-pointer right-0 bg-white bg-opacity-50 text-red-400 transition-colors duration-300 p-1 rounded hover:bg-gray-300 m-1'
+                                            onClick={() =>
+                                              handleRemoveImage(image, index)
+                                            }
+                                          >
+                                            <svg
+                                              xmlns='http://www.w3.org/2000/svg'
+                                              className='h-6 w-6'
+                                              fill='none'
+                                              viewBox='0 0 24 24'
+                                              stroke='currentColor'
+                                            >
+                                              <path
+                                                strokeLinecap='round'
+                                                strokeLinejoin='round'
+                                                strokeWidth={2}
+                                                d='M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'
+                                              />
+                                            </svg>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
                               <div className='sm:col-span-2'>
                                 <label
                                   htmlFor='quantity'
@@ -341,10 +499,11 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                                     {...registerPost('quantity', {
                                       required: 'Book quantity is required',
                                     })}
-                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${errors.quantity
-                                      ? 'focus:border-red-500 focus:ring-red-500'
-                                      : 'focus:border-indigo-500 focus:ring-indigo-500'
-                                      } `}
+                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${
+                                      errors.quantity
+                                        ? 'focus:border-red-500 focus:ring-red-500'
+                                        : 'focus:border-indigo-500 focus:ring-indigo-500'
+                                    } `}
                                   />
                                 </div>
                                 <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
@@ -368,10 +527,11 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                                       required:
                                         'Book original price is required',
                                     })}
-                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${errors.originalPrice
-                                      ? 'focus:border-red-500 focus:ring-red-500'
-                                      : 'focus:border-indigo-500 focus:ring-indigo-500'
-                                      } `}
+                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${
+                                      errors.originalPrice
+                                        ? 'focus:border-red-500 focus:ring-red-500'
+                                        : 'focus:border-indigo-500 focus:ring-indigo-500'
+                                    } `}
                                   />
                                 </div>
                                 <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
@@ -395,10 +555,11 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                                       required:
                                         'Book selling price is required',
                                     })}
-                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${errors.sellingPrice
-                                      ? 'focus:border-red-500 focus:ring-red-500'
-                                      : 'focus:border-indigo-500 focus:ring-indigo-500'
-                                      } `}
+                                    className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${
+                                      errors.sellingPrice
+                                        ? 'focus:border-red-500 focus:ring-red-500'
+                                        : 'focus:border-indigo-500 focus:ring-indigo-500'
+                                    } `}
                                   />
                                 </div>
                                 <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
@@ -406,7 +567,7 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                                 </span>
                               </div>
                             </div>
-                          </form>
+                          </div>
                         </div>
                       </div>
 
@@ -414,7 +575,10 @@ const Post = ({ open, setOpen, bookDetails = {} }) => {
                         <div className='flex justify-end'>
                           <button
                             type='button'
-                            onClick={() => setOpen(false)}
+                            onClick={() => {
+                              setOpen(false);
+                              setBookDetails({});
+                            }}
                             className='rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
                           >
                             Cancel

@@ -6,8 +6,7 @@ const Footer = () => {
     <section>
       <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
         <div className='border-t border-gray-200'>
-          <div className='pt-6 pb-12'>
-          </div>
+          <div className='pt-6 pb-12'></div>
 
           <div className='lg:grid lg:grid-cols-2 lg:gap-x-6 xl:gap-x-8'>
             <div className='flex items-center rounded-lg bg-gray-100 p-6 sm:p-10'>
@@ -73,7 +72,7 @@ const Footer = () => {
         <div className='py-10 md:flex md:items-center md:justify-between'>
           <div className='text-center md:text-left'>
             <p className='text-sm text-gray-500'>
-              &copy; 2022 All Rights Reserved Rajib
+              &copy; 2023 All Rights Reserved Md Rajib Hossain
             </p>
           </div>
 

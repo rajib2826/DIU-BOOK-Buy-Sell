@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Footer from '../components/Layout/Footer';
-import Navbar from '../components/Layout/Navbar';
 import { useAuth } from '../components/Auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -88,9 +86,9 @@ const Profile = () => {
     data.email = loggedInUser?.email;
     data.photoURL = fileUrl || loggedInUser?.photoURL;
 
-    const { displayName, email, photoURL, address, dob } = data;
+    const { displayName, email, photoURL, phone, address, dob } = data;
 
-    if (displayName && email && address) {
+    if (displayName && email && phone && address) {
       const loading = toast.loading('Please wait...');
 
       try {
@@ -104,6 +102,7 @@ const Profile = () => {
         const payload = {
           displayName,
           email,
+          phone,
           photoURL: fileUrl || photoURL,
           address,
           dob,
@@ -123,9 +122,8 @@ const Profile = () => {
 
   return (
     <>
-      <Navbar />
       <div className='bg-white'>
-        <div className='mx-auto max-w-7xl pt-10 pb-16 px-4 sm:px-6 lg:px-8'>
+        <div className='mx-auto max-w-7xl pt-6 pb-10 px-4 sm:px-6 lg:px-8'>
           <form className='space-y-6' onSubmit={handleProfile(onSubmit)}>
             <div className='bg-gray-50 px-4 py-5 shadow sm:rounded-lg sm:p-6'>
               <div className='md:grid md:grid-cols-3 md:gap-6'>
@@ -203,6 +201,39 @@ const Profile = () => {
                         />
                         <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
                           {errors?.displayName?.message}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className='sm:col-span-4'>
+                      <label
+                        htmlFor='phone'
+                        className='block text-sm font-medium text-gray-700'
+                      >
+                        Phone Number
+                      </label>
+                      <div className='mt-1 flex rounded-md shadow-sm'>
+                        <input
+                          type='text'
+                          name='phone'
+                          id='phone'
+                          defaultValue={loggedInUser?.phone}
+                          {...registerProfile('phone', {
+                            required: 'Phone number is required',
+                            pattern: {
+                              value: /^(01[3-9])(\d{8})$/,
+                              message:
+                                'Phone number must be a valid 11 digit BD number',
+                            },
+                          })}
+                          className={`block w-full rounded-md border-gray-300 shadow-sm sm:text-sm${
+                            errors.phone
+                              ? 'focus:border-red-500 focus:ring-red-500'
+                              : 'focus:border-indigo-500 focus:ring-indigo-500'
+                          } `}
+                        />
+                        <span className='flex items-center font-medium tracking-wide text-red-500 text-sm mt-1 ml-1'>
+                          {errors?.phone?.message}
                         </span>
                       </div>
                     </div>
@@ -298,22 +329,17 @@ const Profile = () => {
                       />
                     </div>
 
-                    <p className='text-sm text-gray-500 sm:col-span-6'>
-                      This account was created on{' '}
-                      <span>
-                        {accountCreationDate?.toLocaleString('en-GB')}
-                      </span>
-                    </p>
-
-                    {/* <div className='col-span-6 sm:col-span-3'>
+                    <div className='col-span-6 sm:col-span-3'>
                       <label
                         htmlFor='first-name'
                         className='block text-sm font-medium text-gray-700'
                       >
-                        New Password
+                        Department
                       </label>
                       <input
-                        type='password'
+                        defaultValue={loggedInUser?.department}
+                        disabled
+                        type='text'
                         name='first-name'
                         id='first-name'
                         autoComplete='given-name'
@@ -321,21 +347,12 @@ const Profile = () => {
                       />
                     </div>
 
-                    <div className='col-span-6 sm:col-span-3'>
-                      <label
-                        htmlFor='last-name'
-                        className='block text-sm font-medium text-gray-700'
-                      >
-                        Confirm Password
-                      </label>
-                      <input
-                        type='password'
-                        name='last-name'
-                        id='last-name'
-                        autoComplete='family-name'
-                        className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
-                      />
-                    </div> */}
+                    <p className='text-sm text-gray-500 sm:col-span-6'>
+                      This account was created on{' '}
+                      <span>
+                        {accountCreationDate?.toLocaleString('en-GB')}
+                      </span>
+                    </p>
                   </div>
                 </div>
               </div>
@@ -359,7 +376,6 @@ const Profile = () => {
           </form>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

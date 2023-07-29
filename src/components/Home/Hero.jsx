@@ -9,10 +9,10 @@ const Hero = () => {
       <div className='pt-16 pb-80 sm:pt-24 sm:pb-40 lg:pt-40 lg:pb-48'>
         <div className='relative mx-auto max-w-7xl px-4 sm:static sm:px-6 lg:px-8'>
           <div className='sm:max-w-lg'>
-            <h1 className='font text-4xl font-semibold tracking-normal text-indigo-800 sm:text-5xl'>
+            <h1 className='text-4xl font-semibold sm:leading-tight tracking-normal text-indigo-800 sm:text-5xl'>
               Largest book buy-sell platform in DIU
             </h1>
-            <p className='mt-4 text-xl text-gray-500'>
+            <p className='mt-8 text-xl text-gray-500'>
               This year, our new summer collection will shelter you from the
               harsh elements of a world that doesn't care if you live or die.
             </p>

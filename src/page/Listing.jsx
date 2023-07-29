@@ -1,55 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import {
-  deleteDoc,
-  doc,
-  collection,
-  onSnapshot,
-  query,
-  where,
-} from 'firebase/firestore';
-import Footer from '../components/Layout/Footer';
-import Navbar from '../components/Layout/Navbar';
+import React, { useEffect, useState, useContext } from 'react';
+import { deleteDoc, doc } from 'firebase/firestore';
 import Post from './Post';
-import { useAuth } from '../components/Auth/AuthContext';
 import { db } from '../firebaseConfig';
 import { toast } from 'react-hot-toast';
+import { StoreContext } from '../components/Context/StoreContext';
+import {
+  EyeDropperIcon,
+  EyeIcon,
+  PencilSquareIcon,
+  TrashIcon,
+  ViewColumnsIcon,
+  ViewfinderCircleIcon,
+} from '@heroicons/react/20/solid';
+import { useNavigate } from 'react-router-dom';
 
 const Listing = () => {
-  const { loggedInUser } = useAuth();
+  const navigate = useNavigate();
+  const { listingLoading, userBooks } = useContext(StoreContext);
   const [postOpen, setPostOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [userBooks, setUserBooks] = useState([]);
   const [bookDetails, setBookDetails] = useState({});
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  // get users books listing
-  useEffect(() => {
-    if (loggedInUser) {
-      setLoading(true);
-      const unsubscribe = onSnapshot(
-        query(
-          collection(db, 'books'),
-          where('sellerEmail', '==', loggedInUser?.email)
-        ),
-        (snapshot) => {
-          const userBooks = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setUserBooks(userBooks);
-          setLoading(false);
-        },
-        (err) => {
-          setLoading(false);
-          toast.error(err.message);
-        }
-      );
-      return () => unsubscribe();
-    }
-  }, [loggedInUser]);
 
   const handleDelete = async (listingId) => {
     if (!window.confirm('Are you sure you want to delete this listing?'))
@@ -66,12 +39,16 @@ const Listing = () => {
   return (
     <>
       {/* Post Modal */}
-      <Post open={postOpen} setOpen={setPostOpen} bookDetails={bookDetails} />
+      <Post
+        open={postOpen}
+        setOpen={setPostOpen}
+        bookDetails={bookDetails}
+        setBookDetails={setBookDetails}
+      />
 
-      <Navbar />
       <div className='bg-white'>
-        <div className='mx-auto max-w-7xl pt-10 pb-16 px-4 sm:px-6 lg:px-8'>
-          <div className='px-4 sm:px-6 lg:px-8'>
+        <div className='mx-auto max-w-7xl pt-6 pb-16 px-4 sm:px-6 lg:px-8'>
+          <div>
             <div className='sm:flex sm:items-center'>
               <div className='sm:flex-auto'>
                 <h1 className='text-2xl font-semibold text-gray-900'>
@@ -124,13 +101,19 @@ const Listing = () => {
                             scope='col'
                             className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
                           >
-                            Status
+                            Stock
                           </th>
                           <th
                             scope='col'
                             className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
                           >
                             Price
+                          </th>
+                          <th
+                            scope='col'
+                            className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
+                          >
+                            Status
                           </th>
                           <th
                             scope='col'
@@ -141,13 +124,13 @@ const Listing = () => {
                         </tr>
                       </thead>
                       <tbody className='divide-y divide-gray-200 bg-white'>
-                        {loading && (
+                        {listingLoading && (
                           <tr>
                             <td className='whitespace-nowrap py-4'>
                               <div className='flex items-center'>
                                 <img
                                   className='w-16 ml-8'
-                                  src='https://media.tenor.com/On7kvXhzml4AAAAj/loading-gif.gif'
+                                  src='https://media.tenor.com/On7kvXhzml4AAAAj/listingLoading-gif.gif'
                                   alt=''
                                 />
                               </div>
@@ -155,7 +138,7 @@ const Listing = () => {
                           </tr>
                         )}
 
-                        {!loading &&
+                        {!listingLoading &&
                           userBooks?.length > 0 &&
                           userBooks?.map((item) => (
                             <tr key={item?.listingId}>
@@ -164,12 +147,19 @@ const Listing = () => {
                                   <div className='h-10 w-10 flex-shrink-0'>
                                     <img
                                       className='h-10 w-10 rounded-lg'
-                                      src={item?.bookCover}
+                                      src={item?.bookCover?.[0]?.thumbnail}
                                       alt=''
                                     />
                                   </div>
                                   <div className='ml-4'>
-                                    <div className='font-medium text-gray-900'>
+                                    <div
+                                      className='font-medium text-gray-900 cursor-pointer hover:text-indigo-600'
+                                      onClick={() => {
+                                        navigate(
+                                          `/book-details/${item?.listingId}?from=listing`
+                                        );
+                                      }}
+                                    >
                                       {item?.name}
                                     </div>
                                   </div>
@@ -199,31 +189,59 @@ const Listing = () => {
                                 </span>
                               </td>
                               <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-600'>
+                                <span className='text-base mr-1 font-bold'>
+                                  ৳
+                                </span>{' '}
                                 {item?.sellingPrice}
                               </td>
-                              <td className='relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6'>
+                              <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
+                                <span
+                                  className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
+                                    item?.paid
+                                      ? 'text-green-800 bg-green-100'
+                                      : 'text-red-600 bg-red-50'
+                                  } `}
+                                >
+                                  {item?.paid
+                                    ? 'Active Listing'
+                                    : 'Pending Payment'}
+                                </span>
+                              </td>
+                              <td className='whitespace-nowrap px-3 py-6 text-sm flex justify-start items-center'>
+                                <button
+                                  type='button'
+                                  onClick={() => {
+                                    navigate(
+                                      `/bookList/?booking_id=${item?.listingId}`
+                                    );
+                                  }}
+                                  className='flex text-green-600 hover:text-green-700 font-semibold'
+                                >
+                                  <EyeIcon className='h-5 w-5 mr-1' /> Invoice
+                                </button>
                                 <button
                                   type='button'
                                   onClick={() => {
                                     setBookDetails(item);
                                     setPostOpen(true);
                                   }}
-                                  className='text-indigo-600 hover:text-indigo-900'
+                                  className='ml-6 flex text-indigo-500 hover:text-indigo-600 font-semibold'
                                 >
+                                  <PencilSquareIcon className='h-5 w-5 mr-1' />{' '}
                                   Edit
                                 </button>
                                 <button
                                   onClick={() => handleDelete(item?.listingId)}
                                   type='button'
-                                  className='ml-6 text-red-800 hover:text-red-900'
+                                  className='ml-6 flex text-red-600 hover:text-red-700 font-semibold'
                                 >
-                                  Delete
+                                  <TrashIcon className='h-5 w-5 mr-1' /> Delete
                                 </button>
                               </td>
                             </tr>
                           ))}
 
-                        {!loading && userBooks?.length === 0 && (
+                        {!listingLoading && userBooks?.length === 0 && (
                           <tr>
                             <td className='whitespace-nowrap py-4 pl-4 pr-3'>
                               <div className='flex items-center'>
@@ -243,7 +261,6 @@ const Listing = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

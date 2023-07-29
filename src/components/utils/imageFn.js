@@ -46,13 +46,13 @@ function _cropper(img, size) {
 }
 
 async function getBase64URL(file) {
-  if (!file || !file.type.startsWith("image/")) {
-    throw new Error("Only images are accepted (jpg, jpeg, gif, png)");
+  if (!file || !file.type.startsWith('image/')) {
+    throw new Error('Only images are accepted (jpg, jpeg, gif, png)');
   }
 
-  if (file.size < 10000) {
+  if (file.size < 1000) {
     throw new Error(
-      "Please upload a high resolution image. Picture size minimum 10KB required!"
+      'Please upload a high resolution image. Picture size minimum 10KB required!'
     );
   }
 
@@ -67,8 +67,8 @@ async function getBase64URL(file) {
 }
 
 async function resizeImg(photo, size, crop = false) {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
   const img = await _createImg(photo);
 
   const [x, y, w, h] = crop ? _cropper(img, size) : _resizer(img, size);
@@ -80,7 +80,7 @@ async function resizeImg(photo, size, crop = false) {
   return new Promise((resolve) => {
     canvas.toBlob((blob) => {
       resolve(blob);
-    }, "image/jpeg");
+    }, 'image/jpeg');
   });
 }
 
